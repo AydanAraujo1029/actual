@@ -1036,7 +1036,9 @@ handlers['api/schedule-update'] = withMutation(async function ({
       case 'name': {
         const newName = String(value);
         const { data: existing } = await aqlQuery(
-          q('schedules').filter({ name: newName }).select('*'),
+          q('schedules')
+            .filter({ name: { $oneof: [newName] } })
+            .select('*'),
         );
         if (!existing || existing.length === 0 || existing[0].id === sched.id) {
           sched.name = newName;
