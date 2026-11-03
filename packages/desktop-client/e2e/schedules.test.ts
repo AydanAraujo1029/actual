@@ -85,6 +85,21 @@ test.describe('Schedules', () => {
     await expect(page).toMatchThemeScreenshots();
   });
 
+  test('creates schedules whose names start with reserved AQL characters', async () => {
+    for (const scheduleName of ['$Netflix', ':Netflix']) {
+      const scheduleEditModal = await schedulesPage.addNewSchedule();
+      await scheduleEditModal.fill({
+        scheduleName,
+        payee: 'Home Depot',
+        account: 'HSBC',
+        amount: 25,
+      });
+      await scheduleEditModal.add();
+
+      await expect(scheduleEditModal.locator).toBeHidden();
+    }
+  });
+
   test('shows a scheduled split transfer in its destination account', async () => {
     await page.evaluate(async () => {
       const $send = (
